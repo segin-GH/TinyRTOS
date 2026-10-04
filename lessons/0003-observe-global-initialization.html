@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TinyRTOS · Observe global initialization</title><link rel="stylesheet" href="../assets/teaching.css"></head>
+<body><main><p class="eyebrow">TINYRTOS · BOOT LAB · 03</p><h1>Make startup observable</h1>
+<p>Goal: connect the copy and clear loops you traced to two actual C variables. This is a small step toward proving your own kernel boots before you build tasks.</p>
+<h2>Recall before reading</h2><p>Your startup has a data-copy loop and a BSS-clear loop. Which one prepares a global with a nonzero initial value? Explain where that value comes from. Send your reasoning in chat for feedback.</p>
+<h2>Your change</h2><p>After the recall check, edit <code>rtos/src/main.c</code>: add two file-scope integer variables, one explicitly initialized to 7 and one without an explicit initializer. Choose their names yourself. Leave the main loop as it is.</p>
+<p>Before building, predict each variable's value when execution first enters <code>main</code>. Show your teacher the code and predictions. We will review them, recover the build commands with debug information, and inspect the variables in QEMU/GDB together.</p>
+<aside>Checkpoint: adding declarations is the exercise. Observing startup in the debugger is the evidence; we have not completed that observation yet.</aside>
+<h2>Read after predicting</h2><p>The <a href="https://sourceware.org/binutils/docs/ld/Output-Section-LMA.html">GNU linker manual's load-address example</a> connects separate load and runtime addresses to a startup copy, followed by BSS clearing. Read the example and its two initialization loops; compare them with your <code>startup.S</code>. Your linker uses <code>FLASH</code> as a region name; that name alone does not establish the physical memory technology of the emulated board.</p>
+<p>Ask your teacher followup questions whenever a step or term is unclear. We will work through one question at a time.</p>
+<p><a href="0002-source-to-image.html">Previous: source to image</a> · <a href="../reference/investigation-vocabulary.html">Investigation vocabulary</a> · <a href="../reference/startup-checkpoints.html">Startup checklist</a></p>
+</main></body></html>

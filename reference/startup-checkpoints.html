@@ -1,0 +1,6 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TinyRTOS · Startup checkpoints</title><link rel="stylesheet" href="../assets/teaching.css"></head><body><main>
+<p class="eyebrow">TINYRTOS · QUICK REFERENCE</p><h1>Trace startup with evidence</h1>
+<p>For each initialization loop in <code>rtos/src/startup.S</code>, identify:</p><ol><li>The register holding the destination address.</li><li>The exclusive end address: stop before writing there.</li><li>The value written and, if copied, its source.</li><li>The number of bytes advanced after each store.</li></ol>
+<p>Use linker symbols to connect the instructions to section boundaries. The <a href="https://sourceware.org/binutils/docs/ld/Output-Section-LMA.html">GNU linker manual</a> explains load versus runtime addresses and shows corresponding copy and clear loops.</p>
+<aside>Prediction → build current source → stop at a known instruction → inspect registers and memory → compare with prediction.</aside>
+<p><a href="../lessons/0003-observe-global-initialization.html">Practice with two globals</a> · <a href="investigation-vocabulary.html">Vocabulary</a></p></main></body></html>

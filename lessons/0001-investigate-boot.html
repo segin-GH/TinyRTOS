@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TinyRTOS · Investigate boot</title><link rel="stylesheet" href="../assets/teaching.css"></head><body><main>
+<p class="eyebrow">TINYRTOS · INVESTIGATION 01 · ABOUT 10 MINUTES</p><h1>What happens before main?</h1>
+<p>Your first win: form a testable explanation of your existing boot path. This supports your goal of building a kernel you can explain yourself.</p>
+<aside>No kernel code to copy. An uncertain prediction is useful evidence. Tell your teacher which instruction or term stops you.</aside>
+<h2>1 · Predict before reading</h2><p>Open <code>rtos/src/startup.S</code> and <code>rtos/linker.ld</code>. Work only from those files first.</p>
+<ol><li>What do you think the first two words in <code>.isr_vector</code> are for?</li><li>Choose one symbol used by the data-copy loop. Where is it defined, and what address do you think it describes?</li><li>If the BSS-clear loop were skipped, what would you predict for an uninitialized global? How could you test the claim without trusting one lucky run?</li></ol>
+<label for="prediction">Write your prediction, or send it in chat:</label><textarea id="prediction" placeholder="I predict … because … . I could check it by … ."></textarea><p>This scratch field is not saved. Copy it into chat for feedback.</p>
+<h2>2 · Check one source</h2><p>Use the vector-table and memory-model sections of the <a href="https://documentation-service.arm.com/static/5ea823e69931941038df1af5">Arm Cortex-M3 Devices Generic User Guide</a>. Read only enough to check your first prediction. Mark what changed in your explanation.</p>
+<h2>3 · Propose evidence</h2><p>Your linker reserves 4 MiB of RAM. Which board or QEMU machine are you using, and what does its documentation say? If using Stellaris, consult <a href="https://www.qemu.org/docs/master/system/arm/stellaris.html">QEMU's board inventory</a>. Do not change the memory map until you identify the target.</p>
+<p>Send your answer to question 1 and the target name. Your teacher will check your reasoning and give one next hint. Ask followup questions whenever something is unclear.</p>
+<p><a href="../reference/investigation-vocabulary.html">Investigation vocabulary</a> · <a href="../LEARNING-PLAN.md">Learning plan</a></p>
+</main></body></html>
