@@ -10,9 +10,6 @@ MEMORY
 
 SECTIONS
 {
-    /*
-     * Code and read-only data
-     */
     .text :
     {
         . = ALIGN(4);
@@ -28,12 +25,6 @@ SECTIONS
     } > FLASH
 
 
-    /*
-     * Initialized data
-     *
-     * The data lives in RAM at runtime,
-     * but its initial values are stored in FLASH.
-     */
     .data :
     {
         . = ALIGN(4);
@@ -47,19 +38,9 @@ SECTIONS
         _edata = .;
     } > RAM AT > FLASH
 
-    /*
-     * Address in FLASH where the initial
-     * .data values are stored.
-     */
     _sidata = LOADADDR(.data);
 
 
-    /*
-     * Uninitialized data
-     *
-     * This gets cleared to zero during
-     * Reset_Handler.
-     */
     .bss :
     {
         . = ALIGN(4);
