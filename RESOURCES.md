@@ -2,6 +2,9 @@
 
 ## Knowledge
 
+- [GCC Basic Asm](https://gcc.gnu.org/onlinedocs/gcc/Basic-Asm.html)
+  Primary syntax reference for embedding an assembly instruction in C. Use for the one-shot SVC trigger in the exception-frame observation lab.
+
 - [GNU linker manual: Output Section LMA](https://sourceware.org/binutils/docs/ld/Output-Section-LMA.html)
   Primary reference for load versus runtime addresses, AT/AT>, and startup copy/zero loops. Use with the two-global initialization experiment.
 

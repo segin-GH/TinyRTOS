@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TinyRTOS · Automatic exception stacking</title><link rel="stylesheet" href="../assets/teaching.css"></head><body><main>
+<p class="eyebrow">TINYRTOS · TASKS · 05 · 7 OCTOBER 2026</p><h1>The CPU saves part of the context</h1>
+<p>Goal: predict the stack space used when an ordinary interrupt pauses your task. Your RTOS can build on this hardware operation.</p>
+<p>On ordinary Cortex-M3 exception entry, before the handler executes, hardware saves eight 32-bit words onto the interrupted code’s current stack: <code>r0, r1, r2, r3, r12, lr, pc, xPSR</code>. The saved PC provides the resume address; xPSR includes the condition flags you just investigated. Source: <a href="https://documentation-service.arm.com/static/5ea823e69931941038df1af5#page=39">Arm guide, §2.3.7, Exception entry</a>.</p>
+<aside>This hardware stack frame is only part of the context. It does not include r4–r11. We will investigate the software’s responsibility after this exercise.</aside>
+<h2>Your prediction</h2><p>Assume SP begins at <code>0x20001000</code>, with enough valid stack memory below it. The stack grows toward lower addresses. For this example there is no extra alignment word, no nesting, and no tail-chaining.</p>
+<label for="prediction">After hardware saves those eight words, what is SP? Show your byte-count calculation.</label><textarea id="prediction" placeholder="Count the bytes, then calculate the new address."></textarea>
+<p>Send your prediction in chat for feedback before moving on. Ask your teacher any followup questions about the words or addresses.</p>
+<h2>Read after predicting</h2><p>Read only the exception-entry paragraph and stack-frame diagram in the <a href="https://documentation-service.arm.com/static/5ea823e69931941038df1af5#page=39">Arm primary source</a>. Compare its stack direction with your earlier debugger observation of PUSH.</p>
+<p><a href="0004-why-preserve-task-context.html">Previous: preserving context</a> · <a href="../reference/task-state.html">Task-state reference</a></p>
+</main></body></html>

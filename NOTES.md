@@ -1,5 +1,45 @@
 # Teaching preferences
 
+- Session paused at learner's request on 2026-10-07; plans to resume tomorrow, 2026-10-08. Resume at lessons/0009-observe-an-svc-frame.html. First inspect rtos/src/main.c for a learner-added inline-assembly SVC #0 statement before the while loop; no such change has been reported yet. Review their attempt, recover the debug build/QEMU/GDB commands, then observe the hardware frame at Default_Handler. Current main uses MSP; PSP remains unconfigured. Begin with one brief recall of hardware-frame contents or saved PC, then proceed to the hands-on lab. Do not infer exception-frame observation or first-task launch from today's guided questions. No reminder or scheduled automation requested.
+
+- Latest checkpoint (2026-10-07): learner converts T mask to 0x01000000 and predicts wrong-entry frame starts A. See learning-records/0029-initial-thumb-mask-and-entry-selection.md. Next observable milestone: lessons/0009-observe-an-svc-frame.html. Learner should add one inline-asm SVC #0 before main's loop, show attempt, then rebuild and inspect Default_Handler's frame. Current code uses MSP; PSP task execution is not configured. No new exception observation or task launch verified.
+
+- Latest checkpoint (2026-10-07): learner initially proposes AND to set T, then independently chooses OR when prompted to consider xPSR = 0. Teacher corrects bit-23 binary mask to bit-24 mask and supplies 1u << 24. Learner explains why literal 24 is not the bit-24 mask. See learning-records/0028-setting-a-bit-versus-testing-a-mask.md and reference/bit-masks.html. Next check hexadecimal mask construction before initial-frame coding.
+
+- Latest checkpoint (2026-10-07): learner identifies task_b's entry for new task frame PC. See learning-records/0027-new-task-entry-in-initial-frame.md. Prepared lessons/0008-initial-task-thumb-state.html using Arm §2.1.3: next assess a C expression with only bit 24 set for initial xPSR T state. Bit-shift proficiency and initial-frame construction remain unverified.
+
+- Latest checkpoint (2026-10-07): learner locates resume address in the stack and predicts execution at saved PC = 0x00000180 after clarification of the PC slot. See learning-records/0026-exception-return-restores-saved-pc.md. Next introduce new-task initial-frame problem and ask which entry address belongs in the PC slot. EXC_RETURN decoding and full initial frame construction remain unverified.
+
+- Prepared lessons/0007-exception-return.html on 2026-10-07 from Arm §2.3.7/Table 2-17. Introduce handler LR's EXC_RETURN marker, 0xFFFFFFFD for Thread mode/PSP, and BX LR as exception return under those conditions. Pending question: where the actual resume instruction address comes from. No exception-return understanding demonstrated yet.
+
+- Latest checkpoint (2026-10-07): learner gives broad integrated save-A/restore-B explanation and recalls software r4–r11 but mistakenly says hardware saves PSP. Corrected hardware uses PSP; learner then distinguishes PSP's stack role from PC's execution role. See learning-records/0025-integrated-switch-explanation-and-pointer-roles.md. Next introduce EXC_RETURN; recheck hardware-frame contents after spacing. Wording should distinguish address registers from memory contents.
+
+- Latest checkpoint (2026-10-07): learner predicts saved r4 would be misloaded into r0 with wrong hardware-frame base and identifies RTOS as task selector. See learning-records/0024-restore-layout-and-task-selection.md. Next request a short integrated A-to-B switch explanation before advancing; individual guided answers do not establish integrated mastery.
+
+- Latest checkpoint (2026-10-07): learner recognizes r0 writeback does not update PSP and that the combined base suffices with known layout. After contents/address clarification, selects 0x20000FE0 for PSP before hardware restore. See learning-records/0023-saved-base-versus-hardware-return-pointer.md. Next use wrong-base restoration to check understanding; EXC_RETURN remains unverified.
+
+- Latest checkpoint (2026-10-07): learner recognizes MRS doesn't store working registers and computes 0x20000FC0. After correcting hardware-frame versus combined-frame confusion with a diagram, selects the combined base and connects known length to layout offsets. See learning-records/0022-combined-frame-base-and-register-writeback.md. Next introduce STMDB writeback and test whether r0 changes propagate to PSP. Unspecified save instruction made an earlier r0 question ambiguous; distinguish memory address from register writeback explicitly.
+
+- Latest checkpoint (2026-10-07): learner identifies handler PUSH destination as handler stack, chooses A's stack pointer for A's hardware frame, and chooses downward allocation for software-saved registers. See learning-records/0021-handler-stack-versus-task-context-save.md. Next introduce MRS r0, PSP and distinguish reading the pointer from storing r4–r11.
+
+- Latest checkpoint (2026-10-07): learner identifies A's task stack as the location of A's hardware frame when A uses PSP. See learning-records/0020-interrupted-task-frame-uses-psp.md. Next predict the destination of a handler PUSH (MSP), connecting stack selection to explicit software context saving.
+
+- Latest checkpoint (2026-10-07): learner selects B's saved pointer for B's context and recognizes A's pointer restores A's values. See learning-records/0019-selecting-the-incoming-task-context.md. Next introduce MSP/PSP; distinguish the interrupted task's hardware frame on PSP from handler execution using MSP.
+
+- Latest checkpoint (2026-10-07): learner independently calculates 64 bytes for the simplified combined context and saved SP = 0x20000FC0 from 0x20001000. See learning-records/0018-combined-context-frame-size.md. Next connect selection of a task's saved SP to restoring that task, then introduce MSP/PSP and exception return without a finished implementation.
+
+- Latest checkpoint (2026-10-07): corrected initial upward stack calculation; learner independently computes another downward four-byte push. Initially proposed zeroing an unsaved register, then correctly traces saving and restoring A's r4 = 42 via the stack. See learning-records/0017-stack-direction-and-software-register-saving.md. Next combine hardware and software save sizes in a simplified example; avoid inferring full context-switch mastery.
+
+- Prepared lessons/0005-automatic-exception-stacking.html on 2026-10-07 using Arm §2.3.7. Pending prediction: eight 32-bit hardware-saved words, SP initially 0x20001000, no alignment padding. Exception stacking understanding not yet demonstrated.
+
+- Latest checkpoint (2026-10-07): learner identifies PC and correctly gives Z = 1 for BEQ after equality. Working registers, stack position, execution position, and flags have now been discussed as task context. See learning-records/0016-execution-position-and-condition-flags.md. Next introduce automatic exception stacking from the Arm primary source; full frame layout remains unverified.
+
+- Latest checkpoint (2026-10-07): learner identifies shared save-area overwrite, proposes stacks tracked by SP, and recognizes that saving SP alone cannot recover unsaved registers after a concrete clarification. See learning-records/0015-per-task-stacks-and-saved-registers.md. Next probe execution position (PC); exact context layout and hardware/software saving remain unverified.
+
+- Latest checkpoint (2026-10-07): learner predicted corrupted result 300 versus intended 30 and proposed storing A's registers before B runs. See learning-records/0014-register-values-survive-task-switches.md. Next probe whether one shared save area can retain both paused tasks' values; restoration explained but not independently demonstrated.
+
+- Resumed on 2026-10-07. Prepared lessons/0004-why-preserve-task-context.html, narrowing the pending context-preservation question to one ADD prediction with A's registers overwritten by B. Await learner reasoning; no new understanding demonstrated. Keep one question at a time and the focus on building the RTOS.
+
 - User wants to build an RTOS from scratch and deeply understand scheduling, mutexes, semaphores, queues, and workers.
 - Guide through questions, predictions, experiments, and progressively stronger hints. Do not supply finished implementations or exercise answers.
 - Ask for their reasoning before correcting it; review their code after they attempt each step.

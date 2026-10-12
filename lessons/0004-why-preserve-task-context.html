@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TinyRTOS · Why preserve task context?</title><link rel="stylesheet" href="../assets/teaching.css"></head>
+<body><main><p class="eyebrow">TINYRTOS · TASKS · 04 · 7 OCTOBER 2026</p><h1>Pause a task without losing its work</h1>
+<p>Your boot and global-initialization observations are complete. Today’s small win: explain one failure that a task switch must prevent. This is the first step toward switching tasks in your own RTOS.</p>
+<h2>The state you already know</h2><p>Registers hold working values. The program counter (PC) identifies execution position; the stack pointer (SP) identifies the current stack position. See the <a href="https://documentation-service.arm.com/static/5ea823e69931941038df1af5#page=15">Arm Cortex-M3 guide, §2.1.3, Core registers</a>. For this exercise, assume both tasks use the same CPU.</p>
+<h2>Predict one instruction</h2><p>Task A pauses just before this instruction:</p><pre><code>adds r2, r0, r1</code></pre>
+<p>At the pause, A has <code>r0 = 10</code> and <code>r1 = 20</code>. Task B runs and leaves <code>r0 = 100</code> and <code>r1 = 200</code>. Our deliberately incomplete switch returns to A’s correct instruction, but leaves B’s values in those two registers.</p>
+<label for="prediction">What value will A put in r2, and why is that a problem?</label><textarea id="prediction" placeholder="Write your prediction before discussing it."></textarea>
+<p>Send your prediction and reasoning to your teacher in chat for immediate feedback. We will check this one step before discussing how to preserve a task’s state. Ask followup questions whenever a term or instruction is unclear.</p>
+<h2>Read after predicting</h2><p>Consult <a href="https://documentation-service.arm.com/static/5ea823e69931941038df1af5">Arm’s guide</a>, §3.5.1, ADD and SUB, for the instruction’s operands. Keep the reading to the register description and this instruction.</p>
+<p><a href="0003-observe-global-initialization.html">Previous: global initialization</a> · <a href="../reference/task-state.html">Task-state reference</a> · <a href="../reference/investigation-vocabulary.html">Investigation vocabulary</a></p>
+</main></body></html>
