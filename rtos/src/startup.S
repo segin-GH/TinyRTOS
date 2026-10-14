@@ -92,5 +92,9 @@ Default_Handler:
 .type SVC_Handler, %function
 
 SVC_Handler:
-
+    ldr r0, =task_a_stack
+    adds r0, r0, #192
+    ldmia r0!, {r4-r11}
+    msr psp, r0
+    ldr lr, =0xfffffffd
     bx lr
