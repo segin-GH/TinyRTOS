@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-uint32_t task_a_stack[64] = {0};
+// Task stack
+_Alignas(8) uint32_t task_a_stack[64] = {0};
 
 int varx = 7;
 int vary;
@@ -63,6 +64,7 @@ int main(void)
     *--sp = 0; // r4
 
     asm("svc #0");
+
     while (1)
     {
         int var = 1;

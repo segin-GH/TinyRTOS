@@ -1,5 +1,11 @@
 # Teaching preferences
 
+- Latest checkpoint (2026-10-14): SVC now routes to SVC_Handler, which executes bx lr. Learner rebuilt and observed stepi return to main.c:69; explicitly recognized return to main. See learning-records/0035-observed-svc-return-to-main.md. GDB now paused in main after exception return. Next first-task launch groundwork: PSP frame selection, software register restore, then changed EXC_RETURN. No PSP setup or task execution yet. Slow down for debugger syntax and distinguish addresses from contents; learner runs builds.
+
+- Latest checkpoint (2026-10-14): learner built and inspected initial task frame before SVC. Combined base = 0x200000c8 (index 48), hardware base = 0x200000e8 (index 56), LR = 0x91, PC = 0x88, xPSR = 0x01000000. See learning-records/0034-observed-initial-task-context.md. GDB is paused at main.c:66 before SVC. Next observe Default_Handler entry and compare the live exception frame with the constructed array; no task launch or PSP setup yet.
+
+- Learner runs code builds themselves. Provide commands when needed, explain relevant options, and review their shared output. Run builds on their behalf only when explicitly asked. Requested on 2026-10-14 and added to the teach skill.
+
 - Session paused at learner's request on 2026-10-12; plans to resume tomorrow, 2026-10-13. Current initial context in main.c is complete through r4 at task_a_stack[48]; see learning-records/0033-complete-initial-context-pending-inspection.md. First inspect startup.S:22 for .word 3efault_Handler and review learner's correction to .word Default_Handler. C compiles, assembly blocked; no new ELF/runtime frame inspection or launch yet. Next rebuild, ensure eight-byte task-stack alignment, inspect constructed frame in GDB using a fresh image, then return to PSP/launch in small steps. No reminder requested.
 
 - Latest checkpoint (2026-10-12): learner has written initial frame slots xPSR [63], PC [62], LR [61] in rtos/src/main.c, reviewed from disk. See learning-records/0032-initial-frame-first-three-slots.md. Next initialize r12/r3/r2/r1/r0 below LR. Still need software frame, eight-byte alignment, build and memory inspection, then PSP/launch; do not treat construction as execution.

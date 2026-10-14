@@ -18,7 +18,7 @@
 .word Default_Handler
 .word Default_Handler
 .word Default_Handler
-.word Default_Handler
+.word SVC_Handler
 .word Default_Handler
 .word Default_Handler
 .word Default_Handler
@@ -86,3 +86,11 @@ hang:
 Default_Handler:
 
     b Default_Handler
+
+
+.section .text.SVC_Handler
+.type SVC_Handler, %function
+
+SVC_Handler:
+
+    bx lr
