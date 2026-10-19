@@ -92,9 +92,24 @@ Default_Handler:
 .type SVC_Handler, %function
 
 SVC_Handler:
-    ldr r0, =task_a_stack
-    adds r0, r0, #192
+    tst lr, #4
+    beq restore_task
+    mrs r0, psp
+    stmdb r0!, {r4-r11}
+    ldr r1, =current_task
+    ldr r1, [r1]
+    str r0, [r1]
+    bl schedule_next
+
+restore_task:
+    ldr r0, =current_task
+    ldr r0, [r0]
+    ldr r0, [r0]
+
     ldmia r0!, {r4-r11}
     msr psp, r0
     ldr lr, =0xfffffffd
     bx lr
+
+
+

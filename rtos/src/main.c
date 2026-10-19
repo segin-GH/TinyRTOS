@@ -3,14 +3,21 @@
 
 // Task stack
 _Alignas(8) uint32_t task_a_stack[64] = {0};
-
-int varx = 7;
-int vary;
+_Alignas(8) uint32_t task_b_stack[64] = {0};
 
 void task_a(void)
 {
     while (1)
     {
+        asm("svc #0");
+    }
+}
+
+void task_b(void)
+{
+    while (1)
+    {
+        asm("svc #0");
     }
 }
 
@@ -21,11 +28,26 @@ void task_exit(void)
     }
 }
 
-int main(void)
+struct task
 {
+    uint32_t *saved_sp;
+};
+
+struct task task_a_record;
+struct task task_b_record;
+struct task *current_task;
+
+void schedule_next(void)
+{
+    current_task = (current_task == &task_a_record) ? &task_b_record : &task_a_record;
+}
+
+uint32_t *task_stack_init(uint32_t *stack_top, void (*entry)(void))
+{
+
     // stack for the function
     // at the end we are going to populate the register that we need
-    uint32_t *sp = &task_a_stack[64];
+    uint32_t *sp = stack_top;
 
     // xspr register we are setting it to the thumb instructions
     uint32_t *xspr = --sp;
@@ -33,7 +55,7 @@ int main(void)
 
     // function pointer we need to execute
     uint32_t *pc = --sp;
-    *pc = (uint32_t)(uintptr_t)&task_a;
+    *pc = (uint32_t)(uintptr_t)entry;
 
     // this is so that we can unset the thumb instruction bcz we already set it to  thumb instruction at xspr
     // eg: Actual instruction address:  0x100
@@ -63,6 +85,15 @@ int main(void)
     *--sp = 0; // r5
     *--sp = 0; // r4
 
+    return sp;
+}
+
+int main(void)
+{
+    task_a_record.saved_sp = task_stack_init(&task_a_stack[64], task_a);
+    task_b_record.saved_sp = task_stack_init(&task_b_stack[64], task_b);
+
+    current_task = &task_b_record;
     asm("svc #0");
 
     while (1)
