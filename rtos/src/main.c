@@ -5,19 +5,23 @@
 _Alignas(8) uint32_t task_a_stack[64] = {0};
 _Alignas(8) uint32_t task_b_stack[64] = {0};
 
+volatile uint32_t *systick_ctrl = (volatile uint32_t *)0xE000E010;
+volatile uint32_t *systick_reload = (volatile uint32_t *)0xE000E014;
+volatile uint32_t *systick_current = (volatile uint32_t *)0xE000E018;
+volatile uint8_t *pendsv_priority = (volatile uint8_t *)0xE000ED22;
+
 void task_a(void)
 {
     while (1)
     {
-        asm("svc #0");
     }
 }
 
 void task_b(void)
 {
+    *systick_ctrl = 7u;
     while (1)
     {
-        asm("svc #0");
     }
 }
 
@@ -94,6 +98,11 @@ int main(void)
     task_b_record.saved_sp = task_stack_init(&task_b_stack[64], task_b);
 
     current_task = &task_b_record;
+
+    *pendsv_priority = 0xFFu;
+    *systick_reload = 999u;
+    *systick_current = 0u;
+
     asm("svc #0");
 
     while (1)

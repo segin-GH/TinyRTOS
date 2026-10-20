@@ -21,8 +21,8 @@
 .word SVC_Handler
 .word Default_Handler
 .word Default_Handler
-.word Default_Handler
-.word Default_Handler
+.word PendSV_Handler
+.word SysTick_Handler
 
 
 .section .text.Reset_Handler
@@ -84,7 +84,6 @@ hang:
 .type Default_Handler, %function
 
 Default_Handler:
-
     b Default_Handler
 
 
@@ -113,3 +112,23 @@ restore_task:
 
 
 
+.section .text.SysTick_Handler
+.type SysTick_Handler, %function
+
+SysTick_Handler:
+    ldr r0, =0xE000ED04
+    ldr r1, =0x10000000
+    str r1, [r0]
+    bx lr
+
+.section .text.PendSV_Handler
+.type PendSV_Handler, %function
+
+PendSV_Handler:
+    mrs r0, psp
+    stmdb r0!, {r4-r11}
+    ldr r1, =current_task
+    ldr r1, [r1]
+    str r0, [r1]
+    bl schedule_next
+    b restore_task
