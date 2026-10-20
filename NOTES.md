@@ -1,5 +1,11 @@
 # Teaching preferences
 
+- Latest checkpoint (2026-10-21): record 0047. Both tasks now have volatile local counters. GDB showed A=0 initially, execution inside B's loop, then A=326080133; two next commands produced 326080134 and 326080135. Next inspect B counter at its loop (main.c:29 in current source). A breakpoint is 1, B function-entry breakpoint 2 disabled. Learner builds. No comprehensive register-preservation proof yet.
+
+- Session paused at learner request on 2026-10-21 (save till now). Repeated timer-driven B → A → B → A → B verified by pasted GDB stops; record 0046. Resume with pending PSP/r0 question: after MRS r0, PSP both hold 0x20001000; STMDB r0!, {r4-r11} moves r0 to 0x20000FE0; what address does PSP still hold? No answer supplied yet. Current code: main launches B via SVC, B enables SysTick before its empty loop, A has an empty loop, SysTick requests lowest-priority PendSV, PendSV saves/selects/shared-restores. Learner runs builds. Explain unfamiliar concepts and why a step is needed before edits. No reminder requested.
+
+- Latest checkpoint (2026-10-21): pasted GDB task-loop stops directly confirm B → A → B → A → B without task SVC yields; record 0046. Repeated preemptive execution verified for current build. Next revisit PSP versus r0 writeback after MRS/STMDB; learner earlier confused read/write direction and whether PSP updates. Register/local preservation and robustness remain unverified. Explain purpose, learner builds.
+
 - Latest checkpoint (2026-10-21): first timer-driven task execution milestone, record 0045. Shared GDB shows outgoing B then A at PendSV and B loop running; A loop stop confirmed by learner yes without pasted transcript. Both tasks lack SVC. Next consolidate SysTick/PendSV switch sequence via learner explanation before new features. No preservation stress test or broad robustness verification. Learner builds; explain new concepts before edits.
 
 - Latest checkpoint (2026-10-21): full PendSV save/select/shared-restore source inspected; record 0044. Timer enable only in first task B, both task SVCs removed, main launch SVC retained. Await learner rebuild then fresh QEMU/GDB observation of timer-driven alternation; not yet verified. Learner requested moving on from extra PendSV return tracing. Explain purpose before steps; learner builds.

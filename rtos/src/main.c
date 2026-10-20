@@ -12,16 +12,21 @@ volatile uint8_t *pendsv_priority = (volatile uint8_t *)0xE000ED22;
 
 void task_a(void)
 {
+    volatile uint32_t count_a = 0;
     while (1)
     {
+        count_a++;
     }
 }
 
 void task_b(void)
 {
+
+    volatile uint32_t count_b = 0;
     *systick_ctrl = 7u;
     while (1)
     {
+        count_b++;
     }
 }
 
