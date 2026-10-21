@@ -130,10 +130,22 @@ restore_task:
 
 SysTick_Handler:
     /* Request a context switch; PendSV performs the actual save/select/restore. */
+    mov r0, lr
+    push {r0}
+
+    mrs r0, primask		/*Read the previous mask into r0 */
+    push {r0}
+
+    cpsid i			/* Set PRIMASK bit:0 mask interrupts*/
+    bl task_countdown_processing
+    pop {r0}
+    msr primask, r0             /* Restore the previous mask*/
+
     ldr r0, =0xE000ED04          /* Interrupt Control and State Register (ICSR). */
     ldr r1, =0x10000000          /* Bit 28: PENDSVSET. */
     str r1, [r0]                /* Write 1 to mark PendSV pending. */
-    bx lr                       /* Exception return; pending PendSV may run next. */
+    pop {r3}
+    bx r3                       /* Exception return; pending PendSV may run next. */
 
 .section .text.PendSV_Handler
 .type PendSV_Handler, %function
