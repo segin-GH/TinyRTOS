@@ -1,3 +1,4 @@
+#include <lk.h>
 #include <tsk.h>
 
 #include <stdint.h>
@@ -72,18 +73,12 @@ void task_countdown_processing(void)
 
 void task_sleep(uint32_t ticks)
 {
-    uint32_t old_mask;
-
-    asm volatile("mrs %0, primask\n"
-                 "cpsid i"
-                 : "=r"(old_mask)
-                 :
-                 : "memory");
+    uint32_t old_mask = lk();
 
     if (ticks == 0)
     {
         *pendsv_set = 0x10000000;
-        asm volatile("msr primask, %0" : : "r"(old_mask) : "memory");
+        unlk(old_mask);
         return;
     }
 
@@ -92,7 +87,7 @@ void task_sleep(uint32_t ticks)
     current_task->sleep_tick_count = ticks;
     *pendsv_set = 0x10000000;
 
-    asm volatile("msr primask, %0" : : "r"(old_mask) : "memory");
+    unlk(old_mask);
     return;
 }
 
