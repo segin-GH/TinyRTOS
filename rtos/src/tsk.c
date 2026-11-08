@@ -2,6 +2,19 @@
 
 task_t *current_task;
 
+volatile uint32_t *pendsv_set = (volatile uint32_t *)0xE000ED04;
+volatile uint8_t *pendsv_priority = (volatile uint8_t *)0xE000ED22;
+
+void init(void)
+{
+    *pendsv_priority = 0xFFu;
+}
+
+void task_switch(void)
+{
+    *pendsv_set = 0x10000000;
+}
+
 void task_set_current_running_task(task_t *curr_task)
 {
     current_task = curr_task;
