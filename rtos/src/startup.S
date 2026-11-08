@@ -109,7 +109,7 @@ SVC_Handler:
     ldr r1, =current_task        /* Address of the global pointer variable. */
     ldr r1, [r1]                /* Address of the outgoing task record. */
     str r0, [r1]                /* Store combined-frame base in saved_sp (offset 0). */
-    bl schedule_next            /* Select incoming task; BL overwrites live LR. */
+    bl task_schedule_next            /* Select incoming task; BL overwrites live LR. */
 
 restore_task:
     /* Shared by first launch and both switching paths. */
@@ -158,5 +158,5 @@ PendSV_Handler:
     ldr r1, =current_task
     ldr r1, [r1]
     str r0, [r1]                /* Persist outgoing saved_sp before selecting next. */
-    bl schedule_next            /* Change current_task; restore code replaces LR. */
+    bl task_schedule_next            /* Change current_task; restore code replaces LR. */
     b restore_task              /* Restore selected task, possibly the same task. */
