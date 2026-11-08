@@ -2,6 +2,9 @@
 
 ## Knowledge
 
+- [FreeRTOS binary semaphores](https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/02-Queues-mutexes-and-semaphores/02-Binary-semaphores)
+  Primary conceptual comparison for event synchronization and binary token capacity; TinyRTOS starts with one waiter and no timeout.
+
 - [GCC Basic Asm](https://gcc.gnu.org/onlinedocs/gcc/Basic-Asm.html)
   Primary syntax reference for embedding an assembly instruction in C. Use for the one-shot SVC trigger in the exception-frame observation lab.
 

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TinyRTOS · Wait for an event</title><link rel="stylesheet" href="../assets/teaching.css"></head><body><main>
+<p class="eyebrow">TINYRTOS · 13</p><h1>Wait for an event</h1>
+<p>Goal: define the behavior of your first binary semaphore before implementing it. Sleep is complete by your report; now tasks need to coordinate work.</p>
+<h2>From time to events</h2><p>Sleep waits for time to pass. An event wait lets A stop until B announces that something happened. A semaphore is a kernel object that connects that announcement to a waiting task. A task <em>takes</em> a token to proceed; another task <em>gives</em> a token to announce an event. A binary semaphore stores at most one available token.</p>
+<p>If a token is available, take consumes it and returns. Otherwise the calling task becomes blocked: the scheduler excludes it until a give releases it. Its saved context is retained, just as with sleep. Unlike sleep, ticks do not release this wait.</p>
+<h2>Our first contract</h2><ul><li>Initially empty; one possible waiter; task callers only; no timeout.</li><li>Give with no waiter stores one token. Repeated gives still store only one.</li><li>Give with a waiter transfers the event to that waiter and makes it READY. The same event must not also remain as an available token.</li><li>Ready means eligible for scheduling, not necessarily executing immediately.</li></ul>
+<p>The check for an available token and registration as a waiter must form one protected operation. Otherwise a give can land between them and leave a task blocked despite an available event. We will use your interrupt-masking groundwork to reason through that interleaving before coding.</p>
+<aside><p>Prediction: the semaphore starts empty. B gives twice before A takes once. Does A block on its first take? Does it block on its second take if no further give occurs? Explain using the token count.</p></aside>
+<p>Send your prediction in chat; we will use it to choose the minimal data fields. Ask followup questions whenever a term or mechanism is unclear.</p>
+<p>Primary reading: <a href="https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/02-Queues-mutexes-and-semaphores/02-Binary-semaphores">FreeRTOS binary semaphores</a>. This is a conceptual comparison; our restricted first contract is defined above.</p>
+<p><a href="0011-sleep-contract.html">Previous milestone: sleep</a> · <a href="../reference/semaphore-rules.html">Semaphore reference</a></p>
+</main></body></html>
