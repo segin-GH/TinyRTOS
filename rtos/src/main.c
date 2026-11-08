@@ -1,4 +1,5 @@
 #include <lk.h>
+#include <sem.h>
 #include <tsk.h>
 
 #include <stdint.h>
@@ -98,23 +99,24 @@ void task_idle(void)
     }
 }
 
+sem_t my_sem;
+
 void task_a(void)
 {
-    volatile uint32_t count_a = 0;
+    *systick_ctrl = 7u;
     while (1)
     {
-        count_a++;
+        sem_give(&my_sem);
         task_sleep(3);
     }
 }
 
 void task_b(void)
 {
-    volatile uint32_t count_b = 0;
-    *systick_ctrl = 7u;
     while (1)
     {
-        count_b++;
+        // just way to know what task is waiting i will clean up this;
+        sem_take(&my_sem);
         task_sleep(5);
     }
 }
@@ -133,7 +135,8 @@ int main(void)
     task_b_record.state = READY;
     task_b_record.sleep_tick_count = 0;
 
-    task_set_current_running_task(&task_b_record);
+    sem_init(&my_sem);
+    task_set_current_running_task(&task_a_record);
 
     *pendsv_priority = 0xFFu;
     *systick_reload = 999u;
