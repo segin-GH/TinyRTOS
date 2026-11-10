@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TinyRTOS · Verify the counting semaphore</title>
+<link rel="stylesheet" href="../assets/teaching.css">
+</head>
+<body><main>
+<p class="eyebrow">TINYRTOS · 15</p>
+<h1>Verify the counting semaphore</h1>
+<p>Your semaphore lets one task wait for a token produced by another. Prove that the token count and the scheduler agree about when that task can proceed.</p>
+
+<h2>Problem statement</h2>
+<p>Verify the existing counting semaphore with one possible waiter, task callers, and a semaphore that stays initialized throughout the experiment. It starts empty. A give makes one token available up to capacity. A take returns only after consuming a token. An empty take registers a waiter and makes it ineligible to run. A give wakes that waiter, clears the waiter slot, and leaves it eligible to retry when scheduled. Decide which capacities the API accepts and document what happens at the boundaries.</p>
+<p>Use a controlled task demo for each case. The existing demo uses capacity 1 and starts the giver first, so set up the order you want to observe explicitly.</p>
+<ul>
+<li><strong>Empty take, then wake.</strong> Observe the taker become blocked, the scheduler select an eligible task, the giver make the taker ready, and the taker eventually consume the token and return.</li>
+<li><strong>Give before take.</strong> Start with no waiter. Observe a token stored by the giver and consumed by the taker without that task becoming blocked.</li>
+<li><strong>Saturation.</strong> At capacity 3, give four times before any takes. Observe the count after each completed give. Confirm that exactly three takes can complete before a fourth must wait.</li>
+</ul>
+
+<h2>Collect the first trace in GDB</h2>
+<p>A breakpoint stops at code you choose. A watchpoint stops when a value changes, which helps find the instruction that moved the system away from your prediction. Predict the empty-take trace first. Then build with debug symbols and attach GDB to QEMU using the same ELF.</p>
+<pre><code>break sem_take
+break sem_give
+break PendSV_Handler
+watch my_sem.count
+watch my_sem.wait_task
+watch task_b_record.sem_state</code></pre>
+<p>Adapt the task record if you change which task takes. Use <code>continue</code> to get from one event to the next. QEMU's default single-step behavior can suppress interrupts and timer service. At a surprising stop, use <code>bt</code> for the call stack, <code>x/i $pc</code> for the current instruction, and <code>print current_task</code> to inspect the scheduler's task pointer. Watchpoints can stop in the middle of a protected update, so compare the contract at completed operation or scheduler boundaries.</p>
+<aside><p>Done when you can explain all three traces. Start by bringing one trace with the stop location, the count, the waiter, and the taker's state. If it diverges, show the first unexpected transition. Ask me for help with the debugger or for an implementation hint when you want one.</p></aside>
+<p>Primary reading · <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Set-Watchpoints.html">GDB watchpoints</a> · <a href="https://www.qemu.org/docs/master/system/gdb.html">QEMU GDB setup and stepping behavior</a></p>
+<p><a href="0013-binary-semaphore-contract.html">Original binary semaphore lesson</a> · <a href="../reference/semaphore-rules.html">Semaphore reference</a></p>
+</main></body>
+</html>

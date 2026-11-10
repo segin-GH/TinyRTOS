@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TinyRTOS · Your first printk</title>
+<link rel="stylesheet" href="../assets/teaching.css">
+</head>
+<body><main>
+<p class="eyebrow">TINYRTOS · 14</p>
+<h1>Your first <code>printk</code></h1>
+<p>Get one boot message from TinyRTOS onto your terminal. Later, the same output path can show when a task gives a semaphore token and when another task finishes taking it.</p>
+
+<h2>Follow one byte</h2>
+<p><code>printk</code> is a kernel function that turns a message into bytes and hands those bytes to an output device. The device for this lab is a UART, a peripheral that sends bytes over a serial connection. As with your SysTick registers, the CPU controls it by accessing fixed memory addresses. QEMU emulates the UART and can send its output to the terminal.</p>
+<p>For example, the letter <code>B</code> in a boot message goes through the string writer to a one-byte UART transmit operation, then through QEMU to the host terminal. The string writer can later gain formatting, and the UART code can be swapped for an STM32 implementation during the hardware port.</p>
+
+<h2>Implement one boot message</h2>
+<ol>
+<li><strong>Initialize the device.</strong> Use the first CMSDK UART on QEMU <code>mps2-an385</code>. Find the base address in QEMU’s board source and identify the transmit enable, baud divisor, status, and data registers in its UART model.</li>
+<li><strong>Send one byte.</strong> A polling transmitter repeatedly reads the device status until the UART has room. Implement a byte output function using that contract. Test it with a visible character before adding the string writer.</li>
+<li><strong>Send a string.</strong> Give version one the interface <code>void printk(const char *message)</code>. Send the bytes in order and stop at the terminating zero byte. Print <code>TinyRTOS boot</code> followed by a newline once in <code>main()</code>, after UART initialization and before <code>svc #0</code> launches the first task.</li>
+</ol>
+<p>Rebuild with your usual command and include any new source file. To view the output, run the rebuilt ELF with the first serial port connected to your terminal. <code>-display none</code> disables the graphical window and <code>-monitor none</code> leaves standard input and output available for the serial connection.</p>
+<pre><code>qemu-system-arm -M mps2-an385 -kernel path/to/kernel.elf \
+  -display none -monitor none -serial stdio</code></pre>
+<p><strong>Done when</strong> the single-character test works, then the boot line appears once per launch with no missing characters. The first version has one caller before scheduling starts. Formatting and concurrent callers are later exercises.</p>
+<aside><p>Before you run it, predict what your byte function does while the transmit buffer is full. Then share your prediction and the terminal output so we can compare them. Ask me if a register or part of the output path is unclear.</p></aside>
+
+<h2>Primary reading</h2>
+<p>Look up the first UART’s address, then read the register definitions and transmit behavior. <a href="https://github.com/qemu/qemu/blob/master/hw/arm/mps2.c">QEMU MPS2 board source</a> · <a href="https://github.com/qemu/qemu/blob/master/hw/char/cmsdk-apb-uart.c">QEMU CMSDK UART model</a> · <a href="https://www.qemu.org/docs/master/system/invocation.html">QEMU command-line reference</a></p>
+<p><a href="0013-binary-semaphore-contract.html">Previous lesson</a> · <a href="../reference/printk-path.html">Printk reference</a></p>
+</main></body>
+</html>

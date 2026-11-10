@@ -2,39 +2,27 @@
 
 Build your own RTOS for MPS2 Cortex-M3, from reset to executing tasks and coordinating them. You write the implementation; I guide experiments and review your reasoning. Progress is based on evidence, not a fixed number of weeks. See [MISSION.md](MISSION.md).
 
-Working lab: QEMU `mps2-an385`, supported by the installed QEMU and identified as Cortex-M3 in [QEMU's MPS2 documentation](https://www.qemu.org/docs/master/system/arm/mps2.html). If you mean physical MPS2 hardware or AN511, adjust the lab before the first experiment.
+Working lab: QEMU `mps2-an385`, supported by the installed QEMU and identified as Cortex-M3 in [QEMU's MPS2 documentation](https://www.qemu.org/docs/master/system/arm/mps2.html). All milestones use this emulator.
 
 ## Current project
 
-- `rtos/src/startup.S`: Cortex-M3 vector table and reset path with data-copy and BSS-clear loops.
-- `rtos/linker.ld`: regions named FLASH/RAM, section placement, and startup symbols; declares 4 MiB per region. Validate addresses and actual memory types against AN385; region names alone do not establish hardware behavior.
-- `rtos/src/main.c`: empty infinite loop.
-- Object files and `kernel.elf` exist; that does not prove they match the current source or boot successfully.
-- No build recipe, target selection, debugger procedure, task abstraction, scheduler, or synchronization code was found.
-- ARM GCC, readelf, and QEMU are available. `arm-none-eabi-gdb` was not found on PATH; other debugger availability has not been checked.
+Boot, first-task launch, and repeated SysTick/PendSV preemption have been observed in QEMU/GDB. Sleep is complete by learner report. The learner has implemented a one-waiter counting semaphore, and runtime checks are pending.
 
-## Milestones
+The active lesson is [verifying the counting semaphore in GDB](lessons/0015-verify-counting-semaphore.html). The [printk lesson](lessons/0014-first-printk.html) is queued for bring-up and diagnostics.
 
-| Step | Question to investigate | Your experiment | Evidence to move on |
-|---|---|---|---|
-| 0. Establish the lab | How do source files become a running MPS2 program? | Document a reproducible build and QEMU/debug procedure; inspect ELF entry and sections. | A fresh build reaches main; you reconcile the linker map with AN385 and QEMU documentation. |
-| 1. Explain boot | What must be true before C runs? | Trace reset; inspect one initialized global and one zero-initialized global. | Explain their load/run addresses and show their values before and after startup. |
-| 2. Understand execution state | What would let a paused function resume correctly? | Trace nested calls, local variables, registers, and the stack. | Draw the required saved state and justify each part. |
-| 3. Exceptions as groundwork | How does the CPU leave and return to interrupted code? | Investigate Thread/Handler modes, MSP/PSP, exception frames, and exception return with a small handler. | Annotate a captured stack frame and explain the return path. |
-| 4. Execute the first task | How can a task begin on its own stack? | Design a minimal task record, stack layout, and launch path; investigate SVC as a launch mechanism. | A task runs on its intended stack; explain entry, argument delivery, and what happens if it returns. |
-| 5. Cooperative switching | How can two tasks take turns voluntarily? | Sketch two tasks and a yield trace; attempt a minimal context switch using the exception groundwork. | Each task resumes where expected, preserving distinct local state and registers. |
-| 6. Scheduling policies | Who should run next, and why? | Hand-simulate FIFO, round-robin, and fixed-priority policies before coding policy variants. | Predict traces including equal priorities, starvation, and an empty ready set. |
-| 7. Interrupts and preemption | What changes if a task does not yield? | Study exception entry/return, SysTick, and PendSV; compare predictions with debugger traces. | CPU-bound tasks can be interrupted and resume with intact state. |
-| 8. Time and blocking | What makes a task eligible to run? | Design ready/running/blocked transitions, sleep, wakeups, and an idle task. | Sleeping tasks consume no scheduled execution; reason through wakeup and timer-wrap boundaries. |
-| 9. Critical sections | How can an interrupt break a shared update? | Construct a harmful interleaving, then attempt a bounded protection strategy. | Explain atomicity, interrupt masking, and why protected regions must be short. |
-| 10. Semaphores | How should an event or available resource wake a waiter? | Design binary/counting behavior and draw wait/wake transitions. | Handle event-before-wait, multiple waiters, and timeout-versus-signal races. |
-| 11. Mutexes | What does resource ownership add? | Create contention, deadlock, and a three-task priority-inversion trace; then explore inheritance. | Explain ownership, effective priority, release, and inheritance limitations. |
-| 12. Message queues | Where does a message live while its receiver waits? | Build a bounded producer/consumer queue with deliberate full/empty cases. | Explain data lifetime, ordering, blocking, and timeout behavior. |
-| 13. Workers and work queues | Who executes deferred work, and when? | Use a worker task to process queued jobs; stress it with arrivals faster than service. | Explain queue capacity, backpressure, job lifetime, and long-job effects. |
-| 14. Real-time scheduling | Will work finish before its deadline? | Compare fixed-priority/rate-monotonic and earliest-deadline-first traces in a simulator before kernel integration. | State workload assumptions, identify missed deadlines, and distinguish timing evidence from guarantees. |
-| 15. Integrate | Can the system withstand awkward timing? | Combine a periodic task, event producer, and worker; add fault and stack diagnostics. | Reproduce behavior and explain failures with traces, not guesses. |
+## Ranked milestones
 
-Split every milestone into small lessons. Start with two tasks and fixed storage; revisit allocation and optimizations when a real limitation motivates them.
+| Rank | Problem to solve | Evidence to move on |
+|---|---|---|
+| 1. Finish the current semaphore | Define and verify a bounded counting semaphore with one waiter, task callers, and static lifetime. Make the capacity contract explicit. | Predict and capture empty take, give/wake/retry, stored token, and saturation at capacity 3. Explain the count, waiter, task state, and scheduler decision at each boundary. |
+| 2. Make builds and tests repeatable | Create reproducible debug and release builds. Turn the semaphore cases into automated QEMU tests with a clear pass/fail result and a host timeout for hangs. Add tests for boot, context preservation, sleep, and idle as part of this baseline. | One command reruns the suite. An intentional failure and an intentional hang both fail the run. Save the release ELF/map as the first size baseline. |
+| 3. Track tasks and make scheduling predictable | Replace the hard-coded A/B choice with a bounded static task registry. Define task IDs, stack bounds, eligibility, wait reasons, and task return behavior. Specify scheduling order and tick boundaries before adding policy variants. | GDB can explain what every task is waiting on. Tests cover several tasks, an empty ready set, task return, and tick wrap where applicable. |
+| 4. Make failures observable | Add the UART boot console, assertions, a fault snapshot, and stack usage checks. Use a stack high-water mark to estimate peak stack used in the exercised workload. Add optional counters for switches and runtime as needed. | A deliberately triggered fault identifies the task and fault location. A deliberately small stack exercises the detection path. Measure the cost of enabled diagnostics. |
+| 5. Add progress monitoring and watchdog recovery | Give critical tasks a way to report useful progress. A watchdog resets the device if it is left unfed. Refresh it only when the health policy is satisfied, with explicit expectations for tasks that legitimately block. | A deliberately stuck critical task triggers the emulated CMSDK watchdog and the guest restarts. Capture the reset in the QEMU test harness. Healthy tasks, including expected waits, run without false resets. |
+| 6. Extend synchronization for the workload | Add multiple semaphore waiters and timeouts when required. Add fixed priorities and mutex ownership for shared resources, then test priority inversion. Add bounded message queues when tasks need to exchange data. | Tests demonstrate waiter order, timeout/give races, mutex contention, and queue full/empty behavior for the features selected. |
+| 7. Tune and qualify the release | Run long workloads and inject failures. Compare build and algorithm choices against the same functional suite, map, and emulated instruction counts on fixed workloads. | The selected release meets explicit budgets, passes regressions, and has a documented recovery and debugging procedure. |
+
+Keep size and timing visible from the first repeatable build. Compare loadable flash and static RAM from the map and section sizes, per-task stack use separately, and relative execution cost under a fixed QEMU configuration. Use fixed-capacity storage with a known memory cost. Try size-oriented compiler settings and dead-code removal one change at a time. Change scheduler structures only when measurement shows where the cost is. Keep advanced scheduling policies for a workload with a demonstrated need.
 
 ## Sessions before the first task
 
@@ -65,36 +53,23 @@ For each implementation, answer: what invariant must hold, what happens at the b
 
 Add short retrieval exercises using earlier bit operations and structures in later milestones. No standalone DSA syllabus or solved implementation is required; choose exercises that serve the kernel being built.
 
-## Final milestone: port to STM32 hardware
+## Release evidence in QEMU
 
-The user's final goal is an STMicroelectronics microcontroller port; STM32 is the working interpretation, with the exact board and CPU core pending. MPS2 remains the initial learning target.
-
-During development, identify three responsibilities as they arise: generic kernel policy/data structures, CPU-specific context switching and exception handling, and board-specific startup/memory/peripherals. Keep their boundaries understandable without building an elaborate portability framework upfront.
-
-After the kernel works on MPS2:
-
-1. Select the exact MCU/board and gather its reference manual, core documentation, memory map, and debug procedure.
-2. Compare its core and ABI with the MPS2 port. Investigate differences such as floating-point context only if the selected device and build use them.
-3. Adapt startup, vector table, linker regions, clock setup, tick configuration, interrupt priorities, and the observation channel.
-4. Repeat reset-to-main and first-task investigations on hardware before enabling multitasking.
-5. Verify context preservation, scheduling, sleep, synchronization, and queue behavior with reproducible traces.
-6. Measure hardware timing and inspect stack/fault behavior; treat emulator observations as functional evidence rather than hardware timing guarantees.
-
-Completion evidence: a reproducible hardware build, documented flashing/debugging workflow, first-task and multi-task demonstrations, and an explanation of what changed and why. Board purchasing, flashing, and hardware access will be planned once the target is known.
+Use the emulated [CMSDK watchdog](https://github.com/qemu/qemu/blob/master/hw/arm/mps2.c) to test recovery. Record the QEMU version, machine, and test configuration so results can be reproduced. Use instruction counts to compare execution cost and guest ticks to check timer behavior. Physical interrupt latency and cycle budgets require measurements on a device. [QEMU instruction counting](https://www.qemu.org/docs/master/devel/tcg-icount.html)
 
 ## Resume across sessions
 
 At the end of each session, update NOTES.md with the current milestone, your last observation, unresolved question, and next experiment. Add a learning record only when you demonstrate understanding. At the next session, read these files and the current code before choosing an exercise. Do not advance merely because a demo runs: you should predict and explain its behavior.
 
-Current checkpoint (2026-10-05): paused after guided startup-code investigation. Learner has traced memory stores, pointer increments, the data-copy boundary, and distinguished initial image data from runtime RAM values. Next session: brief recall, inspect/add two globals, reproduce the build with debug information, and observe initialization on MPS2 in QEMU/GDB. Build, boot, memory-map validation, and task launch remain unverified. See NOTES.md and learning-records for evidence and remaining gaps. The earlier scheduling diagnostic is deferred until scheduling work.
+Current checkpoint (2026-11-09). Verify the existing one-waiter counting semaphore in GDB before starting the console. The demo has capacity 1. Use a controlled capacity-3 scenario for saturation.
 
 ## How our sessions work
 
-1. Recall one idea from the previous session without notes.
-2. Predict one narrowly scoped behavior and explain why.
-3. Make your own implementation or debugger experiment.
-4. Compare observed behavior with the prediction; send your trace or code here.
-5. Receive questions and one hint at a time, then revise your explanation.
+1. Read the full problem statement with scope, behavioral contract, integration points, and acceptance cases.
+2. Predict the state changes before building or running the experiment.
+3. Run the build yourself and use the debugger to find the first observation that differs from your prediction.
+4. Share the smallest reproduction, the expected and observed values, and the stop location. Review starts with that evidence. Implementation hints are available on request.
+5. Once the behavior is understood, turn the trace into a regression where practical.
 
 On your next visit, recall an earlier concept before rereading. Later exercises mix already-practiced concepts. Learning records capture only understanding you demonstrate.
 

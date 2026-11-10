@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TinyRTOS · Printk reference</title>
+<link rel="stylesheet" href="../assets/teaching.css">
+</head>
+<body><main>
+<p class="eyebrow">TINYRTOS · QUICK REFERENCE</p>
+<h1>The <code>printk</code> path</h1>
+<pre><code>message → string writer → UART byte output → QEMU → terminal</code></pre>
+<dl>
+<dt><strong>String writer</strong></dt>
+<dd>Passes each byte to the output function in order. The terminating zero marks the end.</dd>
+<dt><strong>Polling UART output</strong></dt>
+<dd>Reads transmit status repeatedly while the buffer is full. Sends one byte once the peripheral has room.</dd>
+<dt><strong>First caller</strong></dt>
+<dd><code>main()</code>, after UART initialization and before the first task launch. One caller lets you verify the output path independently of scheduling.</dd>
+<dt><strong>Future formatter</strong></dt>
+<dd>Turns values such as a semaphore count into printable characters. The UART still receives one byte at a time.</dd>
+</dl>
+<p><a href="../lessons/0014-first-printk.html">Boot message lesson</a> · <a href="https://github.com/qemu/qemu/blob/master/hw/char/cmsdk-apb-uart.c">QEMU UART model</a></p>
+</main></body>
+</html>

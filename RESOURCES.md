@@ -17,6 +17,10 @@
   Comparison only; this course now targets MPS2 rather than Stellaris.
 - [QEMU MPS2 board documentation](https://www.qemu.org/docs/master/system/arm/mps2.html)
   Identifies mps2-an385 as Cortex-M3/AN385 and documents emulator differences from hardware. Primary lab reference; obtain the linked application-note identity's Arm memory-map documentation before changing the linker.
+- [QEMU MPS2 board source](https://github.com/qemu/qemu/blob/master/hw/arm/mps2.c) and [CMSDK UART model](https://github.com/qemu/qemu/blob/master/hw/char/cmsdk-apb-uart.c)
+  Primary references for the emulated UART mapping and register behavior in the first printk lesson.
+- [QEMU invocation reference](https://www.qemu.org/docs/master/system/invocation.html)
+  Describes how to connect the guest serial port to the host terminal.
 - [FreeRTOS RTOS fundamentals](https://www.freertos.org/Documentation/01-FreeRTOS-quick-start/01-Beginners-guide/01-RTOS-fundamentals)
   Primary project documentation for scheduling and real-time motivation. Compare concepts after designing your own behavior.
 - [FreeRTOS queues](https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/02-Queues-mutexes-and-semaphores/01-Queues)
