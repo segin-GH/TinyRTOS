@@ -20,7 +20,7 @@ int uart_deinit(uart_t *uart)
     return 0;
 }
 
-int uart_tx(uint8_t *buf, uint32_t size)
+int uart_tx(uint8_t *buf)
 {
     *uart0_ctrl = 1U;
 

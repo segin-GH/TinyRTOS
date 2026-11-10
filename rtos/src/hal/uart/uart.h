@@ -12,7 +12,7 @@ typedef struct
 int uart_init(uart_t *uart);
 int uart_deinit(uart_t *uart);
 
-int uart_tx(uint8_t *buf, uint32_t size);
+int uart_tx(uint8_t *buf);
 int uart_rx(uint8_t *buf, uint32_t size);
 
 #endif

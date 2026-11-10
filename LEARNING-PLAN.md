@@ -8,7 +8,7 @@ Working lab: QEMU `mps2-an385`, supported by the installed QEMU and identified a
 
 Boot, first-task launch, and repeated SysTick/PendSV preemption have been observed in QEMU/GDB. Sleep is complete by learner report. The learner has implemented a one-waiter counting semaphore, and runtime checks are pending.
 
-The active lesson is [the first `printk` boot message](lessons/0014-first-printk.html). [Counting semaphore verification](lessons/0015-verify-counting-semaphore.html) is deferred at the learner’s request.
+The learner reports completing [the first `printk` boot message](lessons/0014-first-printk.html). [Counting semaphore verification](lessons/0015-verify-counting-semaphore.html) is deferred at the learner’s request.
 
 ## Ranked milestones
 
@@ -61,7 +61,7 @@ Use the emulated [CMSDK watchdog](https://github.com/qemu/qemu/blob/master/hw/ar
 
 At the end of each session, update NOTES.md with the current milestone, your last observation, unresolved question, and next experiment. Add a learning record only when you demonstrate understanding. At the next session, read these files and the current code before choosing an exercise. Do not advance merely because a demo runs: you should predict and explain its behavior.
 
-Current checkpoint (2026-11-10). The CMake cross-build produces `rtos/build/kernel.elf`, and the learner observed one `B` on QEMU UART0. Next replace that test with one `printk` boot line before `svc #0`.
+Current checkpoint (2026-11-10). The CMake cross-build produces `rtos/build/kernel.elf`, and `main()` prints `TinyRTOS boot` before `svc #0`. Next turn that boot marker into a repeatable QEMU smoke test with a host timeout.
 
 ## How our sessions work
 

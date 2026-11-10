@@ -7,6 +7,7 @@ add_executable(kernel.elf
     src/lk.c
     src/tsk.c
     src/sem.c
+    src/printk.c
     src/hal/uart/uart.c
 )
 

@@ -1,5 +1,6 @@
 #include <hal/uart/uart.h>
 #include <lk.h>
+#include <printk.h>
 #include <sem.h>
 #include <tsk.h>
 
@@ -147,8 +148,7 @@ int main(void)
 
     uart_init(&uart);
 
-    uint8_t byte = 'B';
-    uart_tx(&byte, 1);
+    printk("TinyRTOS boot\n");
 
     *systick_reload = 999u;
     *systick_current = 0u;
