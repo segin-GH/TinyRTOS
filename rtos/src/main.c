@@ -1,3 +1,4 @@
+#include <hal/uart/uart.h>
 #include <lk.h>
 #include <sem.h>
 #include <tsk.h>
@@ -98,6 +99,11 @@ void task_idle(void)
 
 sem_t my_sem;
 
+uart_t uart = {
+    .baud = 115200,
+    .uart_isnt = 0,
+};
+
 void task_a(void)
 {
     *systick_ctrl = 7u;
@@ -138,6 +144,11 @@ int main(void)
 
     sem_init(&my_sem, 1);
     task_set_current_running_task(&task_a_record);
+
+    uart_init(&uart);
+
+    uint8_t byte = 'B';
+    uart_tx(&byte, 1);
 
     *systick_reload = 999u;
     *systick_current = 0u;

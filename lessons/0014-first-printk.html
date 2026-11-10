@@ -9,7 +9,7 @@
 <body><main>
 <p class="eyebrow">TINYRTOS · 14</p>
 <h1>Your first <code>printk</code></h1>
-<p>Get one boot message from TinyRTOS onto your terminal. Later, the same output path can show when a task gives a semaphore token and when another task finishes taking it.</p>
+<p>Get one boot message from TinyRTOS onto your terminal. That gives you a visible checkpoint between reset and the first task launch.</p>
 
 <h2>Follow one byte</h2>
 <p><code>printk</code> is a kernel function that turns a message into bytes and hands those bytes to an output device. The device for this lab is a UART, a peripheral that sends bytes over a serial connection. As with your SysTick registers, the CPU controls it by accessing fixed memory addresses. QEMU emulates the UART and can send its output to the terminal.</p>
@@ -21,8 +21,11 @@
 <li><strong>Send one byte.</strong> A polling transmitter repeatedly reads the device status until the UART has room. Implement a byte output function using that contract. Test it with a visible character before adding the string writer.</li>
 <li><strong>Send a string.</strong> Give version one the interface <code>void printk(const char *message)</code>. Send the bytes in order and stop at the terminating zero byte. Print <code>TinyRTOS boot</code> followed by a newline once in <code>main()</code>, after UART initialization and before <code>svc #0</code> launches the first task.</li>
 </ol>
-<p>Rebuild with your usual command and include any new source file. To view the output, run the rebuilt ELF with the first serial port connected to your terminal. <code>-display none</code> disables the graphical window and <code>-monitor none</code> leaves standard input and output available for the serial connection.</p>
-<pre><code>qemu-system-arm -M mps2-an385 -kernel path/to/kernel.elf \
+<p>Add each new C source to the <code>kernel.elf</code> target in <code>rtos/CMakeLists.txt</code>. From <code>rtos/</code>, configure once for a new build directory, then build.</p>
+<pre><code>cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+cmake --build build</code></pre>
+<p>From the same directory, run the rebuilt ELF with the first serial port connected to your terminal. <code>-display none</code> disables the graphical window and <code>-monitor none</code> leaves standard input and output available for the serial connection.</p>
+<pre><code>qemu-system-arm -M mps2-an385 -kernel build/kernel.elf \
   -display none -monitor none -serial stdio</code></pre>
 <p><strong>Done when</strong> the single-character test works, then the boot line appears once per launch with no missing characters. The first version has one caller before scheduling starts. Formatting and concurrent callers are later exercises.</p>
 <aside><p>Before you run it, predict what your byte function does while the transmit buffer is full. Then share your prediction and the terminal output so we can compare them. Ask me if a register or part of the output path is unclear.</p></aside>
