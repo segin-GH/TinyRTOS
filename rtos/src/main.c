@@ -27,12 +27,14 @@ void task_schedule_next(void)
     current_task = (current_task == &task_a_record) ? &task_b_record : &task_a_record;
 
     // Check if the new task is sleeping
-    if (current_task->sleep_state == SLEEPING || current_task->sem_state == BLOCKED)
+    if (current_task->sleep_state == SLEEPING || current_task->sem_state == BLOCKED ||
+        current_task->mut_state == BLOCKED)
     {
         // switch to the other task
         current_task = (current_task == &task_a_record) ? &task_b_record : &task_a_record;
 
-        if (current_task->sleep_state == SLEEPING || current_task->sem_state == BLOCKED)
+        if (current_task->sleep_state == SLEEPING || current_task->sem_state == BLOCKED ||
+            current_task->mut_state == BLOCKED)
         {
             current_task = &task_idle_record;
         }
@@ -112,16 +114,13 @@ void task_a(void)
     *systick_ctrl = 7u;
     while (1)
     {
-        bool ret = mut_lock(&my_mut);
-        if (ret == false)
-        {
+        int ret = mut_lock(&my_mut);
+        if (ret != 0)
             continue;
-        }
 
         printk("Hello From task A. \n");
         task_sleep(50);
         mut_unlock(&my_mut);
-
         task_sleep(20);
     }
 }
@@ -130,16 +129,12 @@ void task_b(void)
 {
     while (1)
     {
-        bool ret = mut_lock(&my_mut);
-        if (ret == false)
-        {
+        int ret = mut_lock(&my_mut);
+        if (ret != 0)
             continue;
-        }
-
         printk("Hello From task b. \n");
         task_sleep(50);
         mut_unlock(&my_mut);
-
         task_sleep(10);
     }
 }
@@ -156,11 +151,13 @@ int main(void)
     task_a_record.saved_sp = task_stack_init(&task_a_stack[64], task_a);
     task_a_record.sleep_state = READY;
     task_a_record.sem_state = READY;
+    task_a_record.mut_state = READY;
     task_a_record.sleep_tick_count = 0;
 
     task_b_record.saved_sp = task_stack_init(&task_b_stack[64], task_b);
     task_b_record.sleep_state = READY;
     task_b_record.sem_state = READY;
+    task_b_record.mut_state = READY;
     task_b_record.sleep_tick_count = 0;
 
     mut_init(&my_mut);

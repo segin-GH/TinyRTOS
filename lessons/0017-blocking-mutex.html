@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TinyRTOS · A mutex that waits</title>
+<link rel="stylesheet" href="../assets/teaching.css">
+</head>
+<body><main>
+<p class="eyebrow">TINYRTOS · 17</p>
+<h1>A mutex that waits</h1>
+<p>In your last demo, each task slept after unlocking to give the other a chance to acquire the mutex. While A held it, B could still burn CPU time retrying. A blocking mutex lets B set its attempt aside. The mutex records B as a <strong>waiter</strong>, and the scheduler skips B until an unlock makes it eligible to run again. <a href="https://docs.zephyrproject.org/latest/kernel/services/synchronization/mutexes.html#concepts">Zephyr mutex concepts</a></p>
+<p>Reuse the wake-and-retry pattern from your semaphore. A blocked B stays inside its original lock call. A's unlock clears the owner and wakes B. When B next runs, it checks whether the mutex is free and claims it if it can. This keeps the check that grants ownership in one place.</p>
+
+<h2>Predict the wakeup</h2>
+<p>A owns the mutex and sleeps for a few ticks. B calls the blocking acquire. At the instant A later unlocks, who owns the mutex, what is B's state, and has B's call returned?</p>
+<details><summary>Check your prediction</summary><p>The owner is empty, B is ready, and B's call is still in progress. The call can return success after B runs and records itself as owner.</p></details>
+
+<h2>Implementation contract</h2>
+<p>Use the existing two tasks and one statically allocated mutex with at most one waiter. Call the blocking acquire from task context with interrupts enabled on entry.</p>
+<ul>
+<li><strong>State.</strong> Track the owner and waiter in the mutex. Track mutex waiting in the task record. Initialize the mutex with both pointers empty and initialize the mutex wait state of each task as ready. Update <code>task_schedule_next()</code> so a task waiting on the mutex is ineligible to run.</li>
+<li><strong>Acquire.</strong> Keep the immediate operation as <code>mut_try_lock()</code>. Give <code>mut_lock()</code> blocking behavior when another task owns the mutex. Return <code>false</code> immediately if the caller already owns it. If the caller must wait, record it as the waiter, mark it blocked, and request a switch. When the call resumes, retry the acquisition. Return <code>true</code> only after recording the caller as owner.</li>
+<li><strong>Release.</strong> Keep the owner check. A successful unlock clears ownership, clears any recorded waiter, and makes that waiter ready. The waiter gets another chance to acquire when the scheduler runs it.</li>
+<li><strong>Interrupt mask.</strong> Protect the check and waiter registration together so an unlock cannot slip between them. Protect the owner and waiter changes during release together as well. Restore the saved mask on every path, including after requesting the switch so PendSV can run.</li>
+</ul>
+
+<h2>Verify one contested acquire</h2>
+<p>Arrange for A to sleep briefly while owning the mutex, and have B call <code>mut_lock()</code> during that interval. Give B a turn after A unlocks. In GDB, observe B blocked with A still owning the mutex, B ready with a free mutex after A's unlock, then B as owner when its original call returns <code>true</code>. Also verify that an uncontended acquire returns immediately.</p>
+<aside><p>Bring back the first state that differs from your prediction. Ask me if you want to trace the PendSV boundary before implementing it.</p></aside>
+<p><a href="0016-mutex-ownership.html">Previous lesson</a> · <a href="../reference/mutex-rules.html">Mutex reference</a> · <a href="../reference/semaphore-rules.html">Semaphore reference</a></p>
+</main></body>
+</html>

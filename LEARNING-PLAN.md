@@ -61,7 +61,7 @@ Use the emulated [CMSDK watchdog](https://github.com/qemu/qemu/blob/master/hw/ar
 
 At the end of each session, update NOTES.md with the current milestone, your last observation, unresolved question, and next experiment. Add a learning record only when you demonstrate understanding. At the next session, read these files and the current code before choosing an exercise. Do not advance merely because a demo runs: you should predict and explain its behavior.
 
-Current checkpoint (2026-11-10). The learner chose to start [mutex ownership](lessons/0016-mutex-ownership.html). Start with a task-only mutex and `try_lock`, then add blocking and waking. The automated boot smoke test remains on the roadmap.
+Current checkpoint (2026-11-15). The learner observed repeated acquisitions by both tasks with the [non-blocking mutex](lessons/0016-mutex-ownership.html) and chose to add [blocking and waking](lessons/0017-blocking-mutex.html). The deliberate non-owner unlock check and automated boot smoke test remain open.
 
 ## How our sessions work
 

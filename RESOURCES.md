@@ -27,6 +27,8 @@
   Reference for communication and blocking behavior. Save for the queue milestone.
 - [FreeRTOS mutexes](https://freertos.org/Real-time-embedded-RTOS-mutexes.html)
   Reference for FreeRTOS ownership-related synchronization and priority inheritance; distinguish its implementation choices from universal requirements.
+- [Zephyr mutex concepts](https://docs.zephyrproject.org/latest/kernel/services/synchronization/mutexes.html#concepts)
+  Describes ownership and waiting for release. Use alongside the TinyRTOS one-waiter contract in lesson 0017.
 
 ## Wisdom (Communities)
 

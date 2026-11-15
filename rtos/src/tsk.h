@@ -15,6 +15,7 @@ typedef struct
     uint32_t *saved_sp;
     task_state_t sleep_state;
     task_state_t sem_state;
+    task_state_t mut_state;
     uint32_t sleep_tick_count;
 } task_t;
 

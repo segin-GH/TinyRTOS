@@ -17,6 +17,12 @@
 <li>In the first TinyRTOS version, <code>try_lock</code> returns false immediately whenever the mutex is held.</li>
 <li>Protect each ownership check and update together. Restore the previous interrupt mask before returning.</li>
 </ul>
-<p><a href="../lessons/0016-mutex-ownership.html">Ownership lesson</a> · <a href="https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/02-Queues-mutexes-and-semaphores/04-Mutexes">FreeRTOS mutexes</a></p>
+<h2>Blocking acquire in TinyRTOS</h2>
+<ul>
+<li>The mutex records one waiter. The scheduler skips the waiter while it is blocked.</li>
+<li>A successful unlock clears ownership and makes the waiter ready.</li>
+<li>The waiter retries when scheduled. Its lock call succeeds once it becomes the owner.</li>
+</ul>
+<p><a href="../lessons/0016-mutex-ownership.html">Ownership lesson</a> · <a href="../lessons/0017-blocking-mutex.html">Blocking lesson</a> · <a href="https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/02-Queues-mutexes-and-semaphores/04-Mutexes">FreeRTOS mutexes</a></p>
 </main></body>
 </html>

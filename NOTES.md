@@ -1,6 +1,6 @@
 # Teaching preferences
 
-- Active checkpoint (2026-11-10). Learner asked to move to mutexes. Start lesson 0016 with A holding a mutex across a switch and B attempting to release it. First scope is task ownership and immediate `try_lock` with one shared mutex. Add blocking and waking after ownership is verified. Learner writes and builds the code. Semaphore verification and the automated boot smoke test are deferred.
+- Active checkpoint (2026-11-15). Learner implemented the non-blocking mutex and shared repeated A/B acquisitions after adding sleeps after unlock. See [record 0051](learning-records/0051-observed-mutex-reacquisition-and-alternation.md). Learner chose to proceed to [lesson 0017](lessons/0017-blocking-mutex.html), a single-waiter blocking acquire using wake and retry. The deliberate non-owner unlock and PRIMASK runtime checks are open. Learner writes and builds the code. Semaphore verification and the automated boot smoke test are deferred.
 
 - Lesson 0014 is complete by learner report. Source review confirmed that `printk.c` is in the CMake target and `main()` calls `printk("TinyRTOS boot\n")` after UART initialization and before `svc #0`. The learner supplied QEMU output for the earlier `B` test in [record 0050](learning-records/0050-observed-first-uart-byte.md) and reported completion of the boot-line test.
 
