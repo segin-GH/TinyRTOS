@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TinyRTOS · Your first mutex</title>
+<link rel="stylesheet" href="../assets/teaching.css">
+</head>
+<body><main>
+<p class="eyebrow">TINYRTOS · 16</p>
+<h1>Who owns the mutex?</h1>
+<p>A mutex gives one task at a time permission to use a shared resource. Imagine A and B both call <code>printk()</code>. Each call writes one byte at a time, so a task switch between bytes can mix the two messages. If both tasks take the same mutex around the whole call, its owner has exclusive access until it releases the mutex. <a href="https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/02-Queues-mutexes-and-semaphores/04-Mutexes">FreeRTOS on mutual exclusion</a></p>
+<p>A task can still be preempted while it owns a mutex. TinyRTOS already has a pointer to each task record, so the mutex can remember who owns it even after <code>current_task</code> changes.</p>
+
+<h2>First exercise</h2>
+<p>A acquires a mutex. SysTick switches to B. B calls <code>mutex_unlock()</code> on that mutex. Predict the return value and who owns it afterward.</p>
+
+<h2>First implementation</h2>
+<p>Use a statically allocated mutex and task callers. Start with three operations in <code>src/mutex.c</code> and <code>src/mutex.h</code>.</p>
+<ul>
+<li><code>mutex_init()</code> starts the mutex with no owner.</li>
+<li><code>mutex_try_lock()</code> records the current task as owner and returns true if the mutex was free. If it already has an owner, return false immediately and preserve the owner. This also covers the owner trying to take it a second time.</li>
+<li><code>mutex_unlock()</code> returns true and clears ownership when called by the owner. If the mutex is free or another task owns it, return false and preserve its state.</li>
+</ul>
+<p>Make each ownership check and update one uninterrupted operation using the interrupt-mask helpers you already have. Keep that protected section inside the mutex operation. The scheduler can run while the owner uses the shared resource. Add <code>mutex.c</code> to the CMake target.</p>
+
+<h2>Check the handoff</h2>
+<p>Use one mutex with tasks A and B in QEMU. Arrange for A to acquire it and let B run before A releases it. Capture each return value and the owner after A acquires, B tries to acquire, B tries to release, A releases, and B tries to acquire again. A can sleep briefly while holding it to force the test interleaving.</p>
+<aside><p>Share your prediction or the first place where the trace differs from it. Ask me if the distinction between ownership and scheduling is unclear. The next mutex exercise will add blocking and waking.</p></aside>
+<p><a href="../reference/mutex-rules.html">Mutex reference</a> · <a href="0014-first-printk.html">Boot console lesson</a></p>
+</main></body>
+</html>

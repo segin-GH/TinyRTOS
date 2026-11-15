@@ -61,7 +61,7 @@ Use the emulated [CMSDK watchdog](https://github.com/qemu/qemu/blob/master/hw/ar
 
 At the end of each session, update NOTES.md with the current milestone, your last observation, unresolved question, and next experiment. Add a learning record only when you demonstrate understanding. At the next session, read these files and the current code before choosing an exercise. Do not advance merely because a demo runs: you should predict and explain its behavior.
 
-Current checkpoint (2026-11-10). The CMake cross-build produces `rtos/build/kernel.elf`, and `main()` prints `TinyRTOS boot` before `svc #0`. Next turn that boot marker into a repeatable QEMU smoke test with a host timeout.
+Current checkpoint (2026-11-10). The learner chose to start [mutex ownership](lessons/0016-mutex-ownership.html). Start with a task-only mutex and `try_lock`, then add blocking and waking. The automated boot smoke test remains on the roadmap.
 
 ## How our sessions work
 

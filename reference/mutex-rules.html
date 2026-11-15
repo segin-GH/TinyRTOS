@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TinyRTOS · Mutex ownership reference</title>
+<link rel="stylesheet" href="../assets/teaching.css">
+</head>
+<body><main>
+<p class="eyebrow">TINYRTOS REFERENCE</p>
+<h1>Mutex ownership</h1>
+<ul>
+<li>A mutex is free or has exactly one task as its owner.</li>
+<li>Ownership persists across task switches.</li>
+<li>A successful acquisition grants the current task exclusive access. Every caller that uses the resource follows the same mutex protocol.</li>
+<li>Only the owner can release the mutex.</li>
+<li>In the first TinyRTOS version, <code>try_lock</code> returns false immediately whenever the mutex is held.</li>
+<li>Protect each ownership check and update together. Restore the previous interrupt mask before returning.</li>
+</ul>
+<p><a href="../lessons/0016-mutex-ownership.html">Ownership lesson</a> · <a href="https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/02-Queues-mutexes-and-semaphores/04-Mutexes">FreeRTOS mutexes</a></p>
+</main></body>
+</html>
