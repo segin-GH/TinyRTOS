@@ -18,7 +18,7 @@ typedef struct
     uint32_t sleep_tick_count;
 } task_t;
 
-// FIX: is this a good idea ?;
+// FIXME: is this a good idea ?;
 extern task_t *current_task;
 
 void init(void);

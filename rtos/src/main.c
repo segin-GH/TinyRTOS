@@ -1,7 +1,7 @@
 #include <hal/uart/uart.h>
 #include <lk.h>
+#include <mut.h>
 #include <printk.h>
-#include <sem.h>
 #include <tsk.h>
 
 #include <stdint.h>
@@ -98,20 +98,31 @@ void task_idle(void)
     }
 }
 
-sem_t my_sem;
-
 uart_t uart = {
     .baud = 115200,
     .uart_isnt = 0,
 };
 
+mut_t my_mut;
+
 void task_a(void)
 {
+    // FIXME: y is this here;
+
     *systick_ctrl = 7u;
     while (1)
     {
-        sem_give(&my_sem);
-        task_sleep(3);
+        bool ret = mut_lock(&my_mut);
+        if (ret == false)
+        {
+            continue;
+        }
+
+        printk("Hello From task A. \n");
+        task_sleep(50);
+        mut_unlock(&my_mut);
+
+        task_sleep(20);
     }
 }
 
@@ -119,8 +130,17 @@ void task_b(void)
 {
     while (1)
     {
-        sem_take(&my_sem);
-        task_sleep(5);
+        bool ret = mut_lock(&my_mut);
+        if (ret == false)
+        {
+            continue;
+        }
+
+        printk("Hello From task b. \n");
+        task_sleep(50);
+        mut_unlock(&my_mut);
+
+        task_sleep(10);
     }
 }
 
@@ -143,7 +163,7 @@ int main(void)
     task_b_record.sem_state = READY;
     task_b_record.sleep_tick_count = 0;
 
-    sem_init(&my_sem, 1);
+    mut_init(&my_mut);
     task_set_current_running_task(&task_a_record);
 
     uart_init(&uart);
